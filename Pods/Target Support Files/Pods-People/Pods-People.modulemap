@@ -1,0 +1,6 @@
+framework module Pods_People {
+  umbrella header "Pods-People-umbrella.h"
+
+  export *
+  module * { export * }
+}

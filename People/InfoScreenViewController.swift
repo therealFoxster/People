@@ -29,6 +29,7 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
                 titleLabel: UILabel!,
                 infoView: UIView!,
                 primaryButton: UIButton!,
+                primaryButtonVisualEffectView: UIVisualEffectView!,
                 secondaryButton: UIButton!,
                 containerStackView: UIStackView!,
                 textField: UITextField!
@@ -45,11 +46,6 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-    
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        loadView()
     }
     
     init(title: String,
@@ -96,6 +92,7 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
         _secondaryButtonAction = secondaryButtonAction ?? dismissAction
         
         loadView()
+        viewDidLoad()
     }
     
     // MARK: - Function overrides -
@@ -148,6 +145,9 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
         primaryButton.configuration?.cornerStyle = .fixed
         primaryButton.configuration?.background.cornerRadius = 14
         
+        primaryButtonVisualEffectView = UIVisualEffectView(effect: .none)
+        primaryButtonVisualEffectView.translatesAutoresizingMaskIntoConstraints = false
+        
         // MARK: Secondary button configs
         secondaryButton = UIButton(primaryAction: _secondaryButtonAction)
         secondaryButton.translatesAutoresizingMaskIntoConstraints = false
@@ -163,7 +163,7 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
         scrollView.addSubview(mainIcon)
         scrollView.addSubview(titleLabel)
         scrollView.addSubview(containerStackView)
-//        scrollView.contentSize = CGSize(width: getScreenDimensions().width - (getScreenDimensions().width/6.25), height: 800)
+        scrollView.addSubview(primaryButtonVisualEffectView)
         
         view.addSubview(scrollView)
         
@@ -173,7 +173,7 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
         let stackViewPadding = screenWidth == 428 ? 100 : screenWidth / 6.25 // iPhone 13 Pro Max, 100, else use formula
         
         if hasPrimaryButton {
-            scrollView.addSubview(primaryButton)
+            primaryButtonVisualEffectView.contentView.addSubview(primaryButton)
             NSLayoutConstraint.activate([
                 primaryButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -55),
                 primaryButton.widthAnchor.constraint(equalToConstant: primaryButtonWidth),
@@ -192,13 +192,20 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
         // MARK: Constraints
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding - 15),
+            primaryButtonVisualEffectView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            primaryButtonVisualEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            primaryButtonVisualEffectView.topAnchor.constraint(equalTo: primaryButton.topAnchor, constant: -20),
+            
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+//            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding - 15),
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+//            scrollView.bottomAnchor.constraint(equalTo: button.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             mainIcon.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: _extraTopPadding),
+            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: topPadding - 15 + _extraTopPadding),
+//            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: _extraTopPadding),
             
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             titleLabel.topAnchor.constraint(equalTo: mainIcon.bottomAnchor, constant: 15),
@@ -217,6 +224,24 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
         scrollView.delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(preferredContentSizeChanged(_:)), name: UIContentSizeCategory.didChangeNotification, object: nil)
+//        self.view.layoutIfNeeded()
+        
+    }
+    
+    override func viewDidLayoutSubviews() {
+        containerStackView.layoutIfNeeded()
+        scrollView.layoutIfNeeded()
+        
+        let width = self.view.frame.width,
+            height = topPadding + _extraTopPadding + mainIcon.frame.height + titleLabel.frame.height + _titleToContentGap + containerStackView.frame.height + primaryButtonVisualEffectView.frame.height
+        
+        scrollView.contentSize = CGSize(width: width, height: height)
+        scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: primaryButtonVisualEffectView.frame.height - view.safeAreaInsets.bottom, right: 0)
+        
+        // If scrollView's content is taller than scrollView (scrolling enabled)
+        if scrollView.contentSize.height - scrollView.frame.size.height > 0 {
+            primaryButtonVisualEffectView.effect = UIBlurEffect(style: .systemMaterial)
+        }
     }
     
     // MARK: - Public functions -
@@ -389,26 +414,36 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
 //        }
     }
     
-    func scrollViewDidScroll(_ scrollView1: UIScrollView) {
-        if scrollView1.contentOffset.y > titleLabel.frame.height - (navigationController?.navigationBar.frame.height)! {
+    func scrollViewDidScroll(_ _scrollView: UIScrollView) {
+        if (scrollView.contentOffset.y >= (scrollView.contentSize.height - scrollView.frame.size.height)) { // Reached bottom
+            if primaryButtonVisualEffectView.effect != .none {
+                primaryButtonVisualEffectView.effect = .none
+            }
+        } else {
+            if primaryButtonVisualEffectView.effect != UIBlurEffect(style: .systemMaterial) {
+                primaryButtonVisualEffectView.effect = UIBlurEffect(style: .systemMaterial)
+            }
+        }
+//        log("scrollView.contentOffset.y = \(scrollView.contentOffset.y)")
+//        if scrollView1.contentOffset.y > titleLabel.frame.height - (navigationController?.navigationBar.frame.height)! {
 //            hiddenTitle(false)
-            
-            UIView.animate(withDuration: 1, animations: {
+//
+//            UIView.animate(withDuration: 1, animations: {
 //                [weak self] in
 //                self?.navigationController?.navigationBar.alpha = 1
 //                self?.title = "Test"
 //                self?.navigationItem.titleView?.alpha = 1
-            })
-        } else {
+//            })
+//        } else {
 //            hiddenTitle(true)
-            
-            UIView.animate(withDuration: 1, animations: {
+//
+//            UIView.animate(withDuration: 1, animations: {
 //                [weak self] in
 //                self?.navigationController?.navigationBar.alpha = 0
 //                self?.title = ""
 //                self?.navigationItem.titleView?.alpha = 0
-            })
-        }
+//            })
+//        }
     }
     
     private func hiddenTitle(_ hidden: Bool) {

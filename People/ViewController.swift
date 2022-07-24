@@ -13,6 +13,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     private var people: [Person] = []
     private var personIndex: Int!
     let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as! String
+    private var photoLibraryAuthorizationStatus: PHAuthorizationStatus!
     
     
     override func viewDidLoad() {
@@ -23,6 +24,11 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         
         let upcomingFeaturesButton = UIBarButtonItem(image: UIImage(systemName: "star.leadinghalf.filled"), style: .plain, target: self, action: #selector(showUpcomingFeaturesScreen))
         navigationItem.rightBarButtonItem = upcomingFeaturesButton
+        
+        // Checking photo lib
+        DispatchQueue.global(qos: .utility).async {
+            self.photoLibraryAuthorizationStatus = PHPhotoLibrary.authorizationStatus()
+        }
         
         // Add person button
         people.insert(Person(name: "Add", image: "SystemImage:plus"), at: 0)
@@ -237,7 +243,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         
         launchScreen.addInfoView(title: "Names to Faces",
                                  subtitle: "Save names and photos of people you've met so you'll never forget a person ever again! (Hopefully.)",
-                                 icon: UIImage(systemName: "person.text.rectangle"));
+                                 icon: UIImage(systemName: "person.text.rectangle"))
         launchScreen.addInfoView(title: "Work in Progress",
                                  subtitle: "This project is incomplete. As a result, a number of well expected features (e.g. retaining newly added people after app restart) are unavailable at this time.",
                                  icon: UIImage(systemName: "star.leadinghalf.filled"))

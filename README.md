@@ -1,5 +1,5 @@
 #  People
-UIKit Practice Project #10 - Simple app (with a few extensions) to store names along with photos of people you've met
+UIKit Practice Project #10 – Simple app (with a few extensions) to store names along with photos of people you've met
 
 ## Screenshots
 ### iPhone

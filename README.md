@@ -6,11 +6,13 @@ UIKit Practice Project #10 – Simple app to store names along with photos of pe
 * Responsive layout that works and looks great on iPhones and iPads
 * Simple, Apple-esque appearance (launch screen, information screens, user-input retrieval screen, etc.)
 
-### Known Issue
+### Known Issues
 * New data is not retained after app restart
+* Image picker shows up blank on Simulator devices (16.0, 20A5283p); likely to be a Simulator issue according to a few forum discussions but it's still worth mentioning
 
-### To-Do Feature
-* Dynamic Type support
+### TODOs
+* Fix known issues
+* Add Dynamic Type support
 
 ### Screenshots
 #### iPhone

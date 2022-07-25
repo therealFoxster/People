@@ -25,7 +25,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         let upcomingFeaturesButton = UIBarButtonItem(image: UIImage(systemName: "star.leadinghalf.filled"), style: .plain, target: self, action: #selector(showUpcomingFeaturesScreen))
         navigationItem.rightBarButtonItem = upcomingFeaturesButton
         
-        // Checking photo lib
+        // Checks photo library authorization in the background using the utility queue
         DispatchQueue.global(qos: .utility).async {
             self.photoLibraryAuthorizationStatus = PHPhotoLibrary.authorizationStatus()
         }
@@ -189,8 +189,8 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         imagePickerController.allowsEditing = true // Allows picture cropping
         imagePickerController.delegate = self
         
-        // Checking photo libaray permission
-        switch PHPhotoLibrary.authorizationStatus() {
+        // Checking photo library permission
+        switch photoLibraryAuthorizationStatus {
         case .authorized:
             _viewController.present(imagePickerController, animated: true)
         case .notDetermined:
@@ -202,7 +202,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
                     }
                 }
             }
-        case .restricted, .denied, .limited:
+        case .restricted, .limited, .denied, .none:
             let title = "\"\(appName)\" Would Like to Access Your Photos",
                 message = Bundle.main.object(forInfoDictionaryKey: "NSPhotoLibraryUsageDescription") as? String
             
@@ -224,14 +224,14 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             try? jpegData.write(to: imagePath)
         }
         
-        let person = people[personIndex]
-        person.image = imageName
-        
         picker.dismiss(animated: true)
         
         if addPersonScreen != nil { // Adding person
+            people.insert(person, at: 1)
+            people[personIndex].image = imageName
             showAddPersonSuccessScreen(name: person.name) // Doesn't work when updating a person photo because addPersonScreen would not be presented at that time
         } else { // Updating person
+            people[personIndex].image = imageName
             collectionView.reloadData()
         }
     }
@@ -248,16 +248,17 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
                                  subtitle: "This project is incomplete. As a result, a number of well expected features (e.g. retaining newly added people after app restart) are unavailable at this time.",
                                  icon: UIImage(systemName: "star.leadinghalf.filled"))
         
+        
         launchScreen.disableSwipeDownToDismiss()
         
         present(launchScreen, animated: true)
     }
 
-    private var addPersonScreen: InfoScreenViewController!
+    private var addPersonScreen: InfoScreenViewController!, person: Person!
     func showAddPersonScreen() {
         addPersonScreen =
         InfoScreenViewController(title: "Enter a Name",
-                                 titleToContentGap: getScreenDimensions().height / 60, contentGap: 28, extraTopPadding: 20,
+                                 titleToContentGap: getScreenDimensions().height / 60, contentGap: 28, 
                                  addPrimaryButton: false)
         
         let addPersonScreenNavigationController = UINavigationController(rootViewController: addPersonScreen)
@@ -276,20 +277,24 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
                 return
             }
             
-            let person = Person(name: name, image: nil)
-            self?.people.insert(person, at: 1)
+            self?.person = Person(name: name, image: nil)
+            
             
             let addPhotoScreen =
                 InfoScreenViewController(title: "Add a Photo for\n\"\(name)\"",
-                                         titleToContentGap: (self?.getScreenDimensions().height)! / 60, contentGap: 25, extraTopPadding: 20,
-                                         addSecondaryButton: true, secondaryButtonAction: UIAction() { [weak self] _ in
-                    self?.showAddPersonSuccessScreen(name: name) // Skip adding photo
-                })
+                                         titleToContentGap: (self?.getScreenDimensions().height)! / 60, contentGap: 25,
+                                         addSecondaryButton: true)
             
             // Continue to add photo
             addPhotoScreen.setPrimaryButtonAction(UIAction() { [weak self] _ in
                 self?.personIndex = 1
                 self?.showImagePicker(fromViewController: addPhotoScreen)
+            })
+            // Skip
+            addPhotoScreen.setSecondaryButtonAction(UIAction() { [weak self] _ in
+                guard let person = self?.person else { return }
+                self?.people.insert(person, at: 1)
+                self?.showAddPersonSuccessScreen(name: name) // Skip adding photo
             })
             
             addPhotoScreen.addMainIcon(UIImage(systemName: "person.crop.artframe", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!)
@@ -311,7 +316,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
 
     func showAddPersonSuccessScreen(name: String = "_unknown") {
         let successScreen = InfoScreenViewController(title: "Successfully added \n\"\(name)\"",
-                                                       titleToContentGap: getScreenDimensions().height / 60, contentGap: 28, extraTopPadding: 20,
+                                                       titleToContentGap: getScreenDimensions().height / 60, contentGap: 28,
                                                        primaryButtonTitle: "Done")
         successScreen.addMainIcon(UIImage(systemName: "checkmark.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!)
         successScreen.addDescription("You can change a person's name and photo by long-pressing on their profile.")
@@ -342,7 +347,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     func showRenamePersonScreen(forPerson person: Person) {
         let renamePersonScreen =
         InfoScreenViewController(title: "Enter a New Name for \"\(person.name)\"",
-                                 titleToContentGap: getScreenDimensions().height / 33, contentGap: 28, extraTopPadding: 20,
+                                 titleToContentGap: getScreenDimensions().height / 33, contentGap: 28,
                                  addPrimaryButton: false)
         let renamePersonScreenNavigationController = UINavigationController(rootViewController: renamePersonScreen)
         

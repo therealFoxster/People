@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import IQKeyboardManagerSwift
 
 class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
     
@@ -101,6 +102,10 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
         view = UIView()
         view.backgroundColor = .systemBackground
         
+        IQKeyboardManager.shared.enable = true
+        IQKeyboardManager.shared.shouldShowToolbarPlaceholder = false
+        IQKeyboardManager.shared.enableAutoToolbar = false
+        
         self.modalPresentationStyle = .formSheet
 //        self.navigationController?.modalPresentationStyle = .formSheet // Doesn't work; must set manually before presenting if embedded inside a navigation controller
         
@@ -173,7 +178,9 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
         let stackViewPadding = screenWidth == 428 ? 100 : screenWidth / 6.25 // iPhone 13 Pro Max, 100, else use formula
         
         if hasPrimaryButton {
+            let _topPadding: CGFloat = screenWidth <= 375 ? 5 : 30
             primaryButtonVisualEffectView.contentView.addSubview(primaryButton)
+            
             NSLayoutConstraint.activate([
                 primaryButton.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.bottomAnchor, constant: -55),
                 primaryButton.widthAnchor.constraint(equalToConstant: primaryButtonWidth),
@@ -182,7 +189,7 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
                 // Constraints for blur view
                 primaryButtonVisualEffectView.widthAnchor.constraint(equalTo: view.widthAnchor),
                 primaryButtonVisualEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                primaryButtonVisualEffectView.topAnchor.constraint(equalTo: primaryButton.topAnchor, constant: -20),
+                primaryButtonVisualEffectView.topAnchor.constraint(equalTo: primaryButton.topAnchor, constant: -(_topPadding)),
             ])
         }
         
@@ -244,8 +251,13 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - Public functions -
     
-    func addMainIcon(_ icon: UIImage) {
+    func addMainIcon(_ icon: UIImage, withCustomTopPadding _topPadding: CGFloat? = nil) {
         mainIcon.image = icon
+
+        if _topPadding != nil {
+            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: topPadding - 15 + _extraTopPadding).isActive = false
+            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: _topPadding!).isActive = true
+        }
     }
     
     func setTitle(_ text: String) {
@@ -401,10 +413,7 @@ class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Experimental
     
     @objc private func preferredContentSizeChanged(_ notification: Notification) {
-//        var contentSizeCategory = traitCollection.preferredContentSizeCategory.rawValue
-//        contentSizeCategory.trimPrefix("UICTContentSizeCategory")
-        
-//        log(contentSizeCategory)
+        log(traitCollection.preferredContentSizeCategory.rawValue)
         
 //        switch contentSizeCategory {
 //        case "XS", "S", "M", "L", "XL":

@@ -296,8 +296,8 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
                 self?.people.insert(person, at: 1)
                 self?.showAddPersonSuccessScreen(name: name) // Skip adding photo
             })
-            
-            addPhotoScreen.addMainIcon(UIImage(systemName: "person.crop.artframe", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!)
+            guard let height = self?.getScreenDimensions().height else { return }
+            addPhotoScreen.addMainIcon(UIImage(systemName: "person.crop.artframe", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!, withCustomTopPadding: height/50)
             addPhotoScreen.addDescription("This helps you recognize the person in case you forget their name.")
             
             self?.addPersonScreen.navigationController?.pushViewController(addPhotoScreen, animated: true)
@@ -305,12 +305,13 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         addPersonScreen.navigationItem.rightBarButtonItem?.style = .done
         
         // Customizations
-        addPersonScreen.addMainIcon(UIImage(systemName: "person.crop.square.filled.and.at.rectangle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!)
+        addPersonScreen.addMainIcon(UIImage(systemName: "person.crop.square.filled.and.at.rectangle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!, withCustomTopPadding: getScreenDimensions().height/50)
         addPersonScreen.addDescription("This helps you identify the person in case you forget their face.")
         addPersonScreen.addTextField(placeholder: "e.g. \"Steve Jobs\"")
         addPersonScreen.setTextFieldAutocapitalizationType(.words)
         
         addPersonScreenNavigationController.modalPresentationStyle = .formSheet
+        
         present(addPersonScreenNavigationController, animated: true)
     }
 
@@ -318,7 +319,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         let successScreen = InfoScreenViewController(title: "Successfully added \n\"\(name)\"",
                                                        titleToContentGap: getScreenDimensions().height / 60, contentGap: 28,
                                                        primaryButtonTitle: "Done")
-        successScreen.addMainIcon(UIImage(systemName: "checkmark.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!)
+        successScreen.addMainIcon(UIImage(systemName: "checkmark.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!, withCustomTopPadding: getScreenDimensions().height/50)
         successScreen.addDescription("You can change a person's name and photo by long-pressing on their profile.")
         
         successScreen.setPrimaryButtonAction(UIAction() { [weak self] _ in
@@ -338,7 +339,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         successScreen.isModalInPresentation = true // Prevent view dismissal by swipping down
         
         // Preventing back navigation
-        addPersonScreen.navigationController?.navigationBar.isHidden = true
+        successScreen.navigationItem.hidesBackButton = true
         addPersonScreen.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         
         addPersonScreen.navigationController?.pushViewController(successScreen, animated: true)

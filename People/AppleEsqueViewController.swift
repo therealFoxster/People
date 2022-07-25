@@ -1,6 +1,5 @@
 //
-//  InfoScreenViewController.swift
-//  People
+//  AppleEsqueViewController.swift
 //
 //  Created by Huy Bui on 2022-07-17.
 //
@@ -8,7 +7,7 @@
 import UIKit
 import IQKeyboardManagerSwift
 
-class InfoScreenViewController: UIViewController, UIScrollViewDelegate {
+class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
     
     // Strings & values
     private var titleText: String = "Title Text",

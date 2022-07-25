@@ -239,7 +239,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     // MARK: - Show screens functions -
     
     func showLaunchScreen() {
-        let launchScreen = InfoScreenViewController(title: "Welcome to\n\(appName)")
+        let launchScreen = AppleEsqueViewController(title: "Welcome to\n\(appName)")
         
         launchScreen.addInfoView(title: "Names to Faces",
                                  subtitle: "Save names and photos of people you've met so you'll never forget a person ever again! (Hopefully.)",
@@ -254,10 +254,10 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         present(launchScreen, animated: true)
     }
 
-    private var addPersonScreen: InfoScreenViewController!, person: Person!
+    private var addPersonScreen: AppleEsqueViewController!, person: Person!
     func showAddPersonScreen() {
         addPersonScreen =
-        InfoScreenViewController(title: "Enter a Name",
+        AppleEsqueViewController(title: "Enter a Name",
                                  titleToContentGap: getScreenDimensions().height / 60, contentGap: 28, 
                                  addPrimaryButton: false)
         
@@ -281,7 +281,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             
             
             let addPhotoScreen =
-                InfoScreenViewController(title: "Add a Photo for\n\"\(name)\"",
+                AppleEsqueViewController(title: "Add a Photo for\n\"\(name)\"",
                                          titleToContentGap: (self?.getScreenDimensions().height)! / 60, contentGap: 25,
                                          addSecondaryButton: true)
             
@@ -316,7 +316,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     }
 
     func showAddPersonSuccessScreen(name: String = "_unknown") {
-        let successScreen = InfoScreenViewController(title: "Successfully added \n\"\(name)\"",
+        let successScreen = AppleEsqueViewController(title: "Successfully added \n\"\(name)\"",
                                                        titleToContentGap: getScreenDimensions().height / 60, contentGap: 28,
                                                        primaryButtonTitle: "Done")
         successScreen.addMainIcon(UIImage(systemName: "checkmark.circle", withConfiguration: UIImage.SymbolConfiguration(pointSize: 64))!, withCustomTopPadding: getScreenDimensions().height/50)
@@ -347,7 +347,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     
     func showRenamePersonScreen(forPerson person: Person) {
         let renamePersonScreen =
-        InfoScreenViewController(title: "Enter a New Name for \"\(person.name)\"",
+        AppleEsqueViewController(title: "Enter a New Name for \"\(person.name)\"",
                                  titleToContentGap: getScreenDimensions().height / 33, contentGap: 28,
                                  addPrimaryButton: false)
         let renamePersonScreenNavigationController = UINavigationController(rootViewController: renamePersonScreen)
@@ -385,7 +385,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     
     @objc func showUpcomingFeaturesScreen() {
         let upcomingFeaturesScreen =
-        InfoScreenViewController(title: "Upcoming Features", primaryButtonTitle: "Done", addSecondaryButton: true, secondaryButtonTitle: "Special Thanks", secondaryButtonAction: UIAction() { [weak self] _ in
+        AppleEsqueViewController(title: "Upcoming Features", primaryButtonTitle: "Done", addSecondaryButton: true, secondaryButtonTitle: "Special Thanks", secondaryButtonAction: UIAction() { [weak self] _ in
             self?.dismiss(animated: true)
             self?.showSpecialThanksScreen()
         })
@@ -407,7 +407,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     @objc func showSpecialThanksScreen() {
         guard let url = URL(string: "https://www.flaticon.com/free-icons/user") else { return }
         
-        let specialThanksScreen = InfoScreenViewController(title: "Special Thanks", primaryButtonTitle: "Done", addSecondaryButton: true)
+        let specialThanksScreen = AppleEsqueViewController(title: "Special Thanks", primaryButtonTitle: "Done", addSecondaryButton: true)
         
         specialThanksScreen.addMainIcon(UIImage(systemName: "sparkles", withConfiguration: UIImage.SymbolConfiguration(pointSize: 56))!)
         

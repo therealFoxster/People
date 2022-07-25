@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CB8B7E38D7465A3D2FAE5BAE /* Pods_People.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D62448212D88A6BFEC22D91F /* Pods_People.framework */; };
-		EC9660792883FEF5000BD96D /* InfoScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9660782883FEF5000BD96D /* InfoScreenViewController.swift */; };
+		EC9660792883FEF5000BD96D /* AppleEsqueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9660782883FEF5000BD96D /* AppleEsqueViewController.swift */; };
 		ECBFC69F28816710003D0B3D /* PersonUICollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECBFC69E28816710003D0B3D /* PersonUICollectionViewCell.swift */; };
 		ECCF703B2881A6110022CBB4 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF703A2881A6110022CBB4 /* Person.swift */; };
 		ECEB121B28815A9900063FDB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECEB121A28815A9900063FDB /* AppDelegate.swift */; };
@@ -23,7 +23,7 @@
 		1C974EE1D8F7DDEB318943CB /* Pods-People.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-People.debug.xcconfig"; path = "Target Support Files/Pods-People/Pods-People.debug.xcconfig"; sourceTree = "<group>"; };
 		4EA8E22B65B3C23DB70C1165 /* Pods-People.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-People.release.xcconfig"; path = "Target Support Files/Pods-People/Pods-People.release.xcconfig"; sourceTree = "<group>"; };
 		D62448212D88A6BFEC22D91F /* Pods_People.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_People.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		EC9660782883FEF5000BD96D /* InfoScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoScreenViewController.swift; sourceTree = "<group>"; };
+		EC9660782883FEF5000BD96D /* AppleEsqueViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEsqueViewController.swift; sourceTree = "<group>"; };
 		ECBFC69E28816710003D0B3D /* PersonUICollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonUICollectionViewCell.swift; sourceTree = "<group>"; };
 		ECCF703A2881A6110022CBB4 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
 		ECEB121728815A9900063FDB /* People.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = People.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -86,7 +86,7 @@
 		ECEB121928815A9900063FDB /* People */ = {
 			isa = PBXGroup;
 			children = (
-				EC9660782883FEF5000BD96D /* InfoScreenViewController.swift */,
+				EC9660782883FEF5000BD96D /* AppleEsqueViewController.swift */,
 				ECEB121A28815A9900063FDB /* AppDelegate.swift */,
 				ECEB121C28815A9900063FDB /* SceneDelegate.swift */,
 				ECEB121E28815A9900063FDB /* ViewController.swift */,
@@ -217,7 +217,7 @@
 			files = (
 				ECCF703B2881A6110022CBB4 /* Person.swift in Sources */,
 				ECEB121F28815A9900063FDB /* ViewController.swift in Sources */,
-				EC9660792883FEF5000BD96D /* InfoScreenViewController.swift in Sources */,
+				EC9660792883FEF5000BD96D /* AppleEsqueViewController.swift in Sources */,
 				ECEB121B28815A9900063FDB /* AppDelegate.swift in Sources */,
 				ECBFC69F28816710003D0B3D /* PersonUICollectionViewCell.swift in Sources */,
 				ECEB121D28815A9900063FDB /* SceneDelegate.swift in Sources */,

@@ -11,7 +11,7 @@ UIKit Practice Project #10 – Simple app to store names along with photos of pe
 * Image picker shows up blank on Simulator devices (16.0, 20A5283p); likely to be a Simulator issue according to a few forum discussions but it's still worth mentioning
 
 ### TODOs
-* Fix known issues
+* Resolve known issues
 * Add Dynamic Type support
 
 ### Screenshots

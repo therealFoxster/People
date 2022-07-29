@@ -8,17 +8,18 @@
 import Foundation
 
 //class Person: NSObject {
-class Person: NSObject, NSCoding { // Modified class definition to use with NSKeyedArchiver
-    
-    required init?(coder: NSCoder) {
-        name = coder.decodeObject(forKey: "name") as? String ?? ""
-        image = coder.decodeObject(forKey: "image") as? String ?? ""
-    }
-
-    func encode(with coder: NSCoder) {
-        coder.encode(name, forKey: "name")
-        coder.encode(image, forKey: "image")
-    }
+//class Person: NSObject, NSCoding { // Modified class definition to use with NSKeyedArchiver
+class Person: NSObject, Codable {
+    // NSCoding-required functions
+//    required init?(coder: NSCoder) {
+//        name = coder.decodeObject(forKey: "name") as? String ?? ""
+//        image = coder.decodeObject(forKey: "image") as? String ?? ""
+//    }
+//
+//    func encode(with coder: NSCoder) {
+//        coder.encode(name, forKey: "name")
+//        coder.encode(image, forKey: "image")
+//    }
     
     var name: String,
         image: String?

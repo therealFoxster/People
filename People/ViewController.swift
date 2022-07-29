@@ -30,17 +30,26 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             self.photoLibraryAuthorizationStatus = PHPhotoLibrary.authorizationStatus()
         }
         
-        // Add person button
-        people.append(Person(name: "Add", image: "SystemImage:plus"))
-        
-        // Adding placeholder peole; causes a spike in memory usage with large photos (could be a leak)
-        DispatchQueue.global(qos: .default).async {
-            for i in 1...7 {
-                self.people.append(Person(name: "Person \(i)", image: "PlaceholderProfilePhoto\(i)"))
+        let defaults = UserDefaults.standard
+        if let savedPeople = defaults.object(forKey: "people") as? Data { // Saved data exists
+            // Codable Person (using JSONDecoder)
+            let jsonDecoder = JSONDecoder()
+            do {
+                people = try jsonDecoder.decode([Person].self, from: savedPeople) // Attempting to create array of Person object from saved json data, then asign that array to people[]
+            } catch {
+                print("Unable to load people.")
+                addPlaceholderCells()
             }
-            DispatchQueue.main.async {
-                self.collectionView.reloadData()
-            }
+            
+            // NSCoding Person (using NSKeyedUnarachiver)
+//            if let decodedPeople = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(savedPeople) as? [Person] {
+//                people = decodedPeople
+//            } else {
+//                print("Unable to load people.")
+//                addPlaceholderCells()
+//            }
+        } else { // First launch; create placeholders
+            addPlaceholderCells()
         }
         
         showLaunchScreen()
@@ -64,8 +73,8 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         cell.label.text = person.name
         
         // Default imageView configuration for all cells (will be customized later on depending on cell type)
-        cell.imageView.layer.cornerRadius = 8
-        cell.layer.cornerRadius = 12
+        cell.imageView.layer.cornerRadius = 10
+        cell.layer.cornerRadius = 15
         cell.imageView.backgroundColor = .none
         cell.imageView.contentMode = .scaleAspectFit
 
@@ -179,6 +188,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
                     _ in
                     self?.collectionView.performBatchUpdates({
                         self?.people.remove(at: indexPath.item)
+                        self?.save()
                         self?.collectionView.deleteItems(at: [indexPath])
                     })
                 })
@@ -186,6 +196,21 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             })
             
             present(alertController, animated: true)
+        }
+    }
+    
+    func addPlaceholderCells() {
+        // Add person button
+        people.append(Person(name: "Add", image: "SystemImage:plus"))
+        
+        // Adding placeholder peole; causes a spike in memory usage with large photos (could be a leak)
+        DispatchQueue.global(qos: .default).async {
+            for i in 1...7 {
+                self.people.append(Person(name: "Person \(i)", image: "PlaceholderProfilePhoto\(i)"))
+            }
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
         }
     }
 
@@ -241,6 +266,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             people[personIndex].image = imageName
             collectionView.reloadData()
         }
+        save()
     }
 
     // MARK: - Show screens functions -
@@ -251,8 +277,8 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         launchScreen.addInfoView(title: "Names to Faces",
                                  subtitle: "Save names and photos of people you've met so you'll never forget a person ever again! (Hopefully.)",
                                  icon: UIImage(systemName: "person.text.rectangle"))
-        launchScreen.addInfoView(title: "Work in Progress",
-                                 subtitle: "This project is incomplete. As a result, a number of well expected features (e.g. retaining newly added people after app restart) are unavailable at this time.",
+        launchScreen.addInfoView(title: "More Features in the Work",
+                                 subtitle: "This project is a work in progress. View upcoming features by tapping the half-filled star icon at the top right corner of the app.",
                                  icon: UIImage(systemName: "star.leadinghalf.filled"))
         
         launchScreen.disableSwipeDownToDismiss()
@@ -285,7 +311,6 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             
             self?.person = Person(name: name, image: nil)
             
-            
             let addPhotoScreen =
                 AppleEsqueViewController(title: "Add a Photo for\n\"\(name)\"",
                                          titleToContentGap: (self?.getScreenDimensions().height)! / 60, contentGap: 25,
@@ -300,6 +325,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             addPhotoScreen.setSecondaryButtonAction(UIAction() { [weak self] _ in
                 guard let person = self?.person else { return }
                 self?.people.insert(person, at: 1)
+                self?.save()
                 self?.showAddPersonSuccessScreen(name: name) // Skip adding photo
             })
             guard let height = self?.getScreenDimensions().height else { return }
@@ -398,9 +424,9 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         
         upcomingFeaturesScreen.addMainIcon(UIImage(systemName: "star.leadinghalf.filled", withConfiguration: UIImage.SymbolConfiguration(pointSize: 56))!)
         
-        upcomingFeaturesScreen.addInfoView(title: "Persistent Storage",
-                                           subtitle: "As you might have noticed, added people are not retained after the app restarts. This will be sorted out in the near future (hopefully).",
-                                           icon: UIImage(systemName: "externaldrive.badge.checkmark"))
+//        upcomingFeaturesScreen.addInfoView(title: "Persistent Storage",
+//                                           subtitle: "As you might have noticed, added people are not retained after the app restarts. This will be sorted out in the near future (hopefully).",
+//                                           icon: UIImage(systemName: "externaldrive.badge.checkmark"))
         upcomingFeaturesScreen.addInfoView(title: "Support for Dynamic Type",
                                            subtitle: "Texts and other components will adjust their size according to the Text Size settings. You can set your device's text size in Settings > Display & Brightness > Text Size.",
                                            icon: UIImage(systemName: "textformat.size"))
@@ -444,6 +470,25 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     }
     
     // MARK: - Utilities functions -
+    
+    func save() {
+        let defaults = UserDefaults.standard
+        
+        // Codable Person code (using JSONEncoder)
+        let encoder = JSONEncoder()
+        if let peopleData = try? encoder.encode(people) {
+            defaults.set(peopleData, forKey: "people")
+        }
+        
+        // NSCoding Person code (using NSKeyedArchiver)
+//        if let peopleData = try? NSKeyedArchiver.archivedData(withRootObject: people, requiringSecureCoding: false) {
+//            defaults.set(peopleData, forKey: "people")
+//        }
+        
+        else {
+            print("Unable to save people data.")
+        }
+    }
     
     // Thanks to @TwoStraws
     func getDocumentsDirectory() -> URL {

@@ -210,7 +210,8 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
         // Constraint properties that can be changed later
         mainIconTopIconConstraint = mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: topPadding - 15 + _extraTopPadding)
         containerStackViewWidthConstraint = containerStackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -(stackViewPadding))
-
+        setTopPadding()
+        
         NSLayoutConstraint.activate([
 //            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding - 15),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),

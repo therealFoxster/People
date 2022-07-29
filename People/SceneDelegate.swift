@@ -18,7 +18,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
         
-        window?.tintColor = UIColor(red: 255/255, green: 155/255, blue: 50/255, alpha: 1) // Custom tint color
+        window?.tintColor = UIColor(red: 234/255, green: 101/255, blue: 43/255, alpha: 1) // Custom tint color
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

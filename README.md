@@ -7,7 +7,7 @@ UIKit Practice Project #10 – Simple app to store names along with photos of pe
 * Simple, Apple-esque appearance (launch screen, information screens, user-input retrieval screen, etc.)
 
 ### Known Issues
-* New data is not retained after app restart
+* ~~New data is not retained after app restart~~ (resolved in https://github.com/foxster-mp4/People/commit/5ada4550426429e293a54aa7a59a71eaead9b22f)
 * Image picker shows up blank on Simulator devices (16.0, 20A5283p); likely to be a Simulator issue according to a few forum discussions but it's still worth mentioning
 
 ### TODOs

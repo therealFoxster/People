@@ -22,6 +22,8 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         title = appName
         navigationController?.navigationBar.prefersLargeTitles = true
         
+//        (collectionViewLayout as! UICollectionViewFlowLayout).sectionInsetReference = .fromSafeArea
+        
         let upcomingFeaturesButton = UIBarButtonItem(image: UIImage(systemName: "star.leadinghalf.filled"), style: .plain, target: self, action: #selector(showUpcomingFeaturesScreen))
         navigationItem.rightBarButtonItem = upcomingFeaturesButton
         
@@ -545,12 +547,10 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         if let indexPath = self.collectionView.indexPathForItem(at: point) {
             if gesture.state == .began {
                 UIImpactFeedbackGenerator(style: .rigid).impactOccurred() // Haptic feedback
-            }
-            if gesture.state != .ended {
-                if indexPath.item == 0 { // Add button (no long press option?)
-                    return
+                
+                if indexPath.item != 0 { // Not add button (no long press option?)
+                    showOptionsForCellAt(indexPath)
                 }
-                showOptionsForCellAt(indexPath)
             }
         } else {
             print("Unable to find index path")

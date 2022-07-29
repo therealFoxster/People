@@ -23,6 +23,10 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
                 _titleToContentGap: CGFloat!,
                 _contentGap: CGFloat!
     
+    // Constraints
+    private var mainIconTopIconConstraint: NSLayoutConstraint!,
+                containerStackViewWidthConstraint: NSLayoutConstraint!
+    
     // Views
     private var scrollView: UIScrollView!,
                 mainIcon: UIImageView!,
@@ -144,7 +148,7 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
         primaryButton.configuration?.attributedTitle?.font = UIFont.systemFont(ofSize: 17, weight: .semibold)
         
         // Appearance
-        primaryButton.tintColor = .systemBlue
+//        primaryButton.tintColor = .systemBlue
         primaryButton.configuration?.contentInsets = NSDirectionalEdgeInsets(top: 15, leading: 0, bottom: 15, trailing: 0)
         primaryButton.configuration?.cornerStyle = .fixed
         primaryButton.configuration?.background.cornerRadius = 14
@@ -164,6 +168,7 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
         
         scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.delaysContentTouches = false
         scrollView.addSubview(mainIcon)
         scrollView.addSubview(titleLabel)
         scrollView.addSubview(containerStackView)
@@ -202,24 +207,30 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
         
         // MARK: Constraints
         
+        // Constraint properties that can be changed later
+        mainIconTopIconConstraint = mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: topPadding - 15 + _extraTopPadding)
+        containerStackViewWidthConstraint = containerStackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -(stackViewPadding))
+
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
 //            scrollView.topAnchor.constraint(equalTo: view.topAnchor, constant: topPadding - 15),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
             mainIcon.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: topPadding - 15 + _extraTopPadding),
 //            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: _extraTopPadding),
+//            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: topPadding - 15 + _extraTopPadding),
+            mainIconTopIconConstraint,
             
             titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             titleLabel.topAnchor.constraint(equalTo: mainIcon.bottomAnchor, constant: 15),
-            titleLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -(screenWidth / 6.25)),
+            titleLabel.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -(screenWidth / 6.25)),
 
             containerStackView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: _titleToContentGap),
             containerStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            containerStackView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -(stackViewPadding)),
+//            containerStackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, constant: -(stackViewPadding))
+            containerStackViewWidthConstraint
         ])
     }
     
@@ -230,21 +241,27 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
         scrollView.delegate = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(preferredContentSizeChanged(_:)), name: UIContentSizeCategory.didChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(setTopPadding), name: UIDevice.orientationDidChangeNotification, object: nil)
     }
     
     override func viewDidLayoutSubviews() {
         containerStackView.layoutIfNeeded()
         scrollView.layoutIfNeeded()
         
-        let width = self.view.frame.width,
-            height = topPadding + _extraTopPadding + mainIcon.frame.height + titleLabel.frame.height + _titleToContentGap + containerStackView.frame.height + primaryButtonVisualEffectView.frame.height
+        let width = self.view.frame.width
+        var height = topPadding + _extraTopPadding + mainIcon.frame.height + titleLabel.frame.height + _titleToContentGap + containerStackView.frame.height + primaryButtonVisualEffectView.frame.height
+//        height -= view.safeAreaInsets.bottom
+//        height -= 9.484848484848
+//        scrollView.frame.size.height -= view.safeAreaInsets.bottom
         
         scrollView.contentSize = CGSize(width: width, height: height)
         scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: primaryButtonVisualEffectView.frame.height - view.safeAreaInsets.bottom, right: 0)
         
         // If scrollView's content is taller than scrollView (scrolling enabled)
-        if scrollView.contentSize.height - scrollView.frame.size.height > 0 {
+        if scrollView.contentSize.height > scrollView.frame.size.height {
             primaryButtonVisualEffectView.effect = UIBlurEffect(style: .systemMaterial)
+        } else {
+            primaryButtonVisualEffectView.effect = .none
         }
     }
     
@@ -301,7 +318,7 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: Additional components functions
     
-    func addInfoView(title: String = "Title", subtitle: String = "The quick brown fox jumps over the lazy dog.", icon: UIImage? = UIImage(systemName: "photo.circle")) {
+    func addInfoView(title: String = "Title", subtitle: String = "The quick brown fox jumps over the lazy dog.", icon: UIImage? = UIImage()) {
         let infoView = getInfoView(title: title, subtitle: subtitle, icon: icon)
         containerStackView.addArrangedSubview(infoView)
     }
@@ -381,13 +398,13 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
         let infoView = UIStackView()
         infoView.translatesAutoresizingMaskIntoConstraints = false
         infoView.axis = .horizontal
+        infoView.spacing = 8
         infoView.addArrangedSubview(infoIconImageView)
         infoView.addArrangedSubview(infoLabelsStackView)
         
         NSLayoutConstraint.activate([
             infoIconImageView.widthAnchor.constraint(equalToConstant: 50),
-            infoLabelsStackView.leftAnchor.constraint(equalTo: infoIconImageView.rightAnchor, constant: 8),
-            infoLabelsStackView.widthAnchor.constraint(equalToConstant: getScreenDimensions().width / 1.8),
+//            infoLabelsStackView.widthAnchor.constraint(equalToConstant: getScreenDimensions().width / 1.8),
         ])
         
         return infoView
@@ -409,6 +426,32 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
         return CGSize(width: width, height: height)
     }
     
+    @objc private func setTopPadding() {
+        if UIDevice.current.userInterfaceIdiom == .phone {
+            switch UIDevice.current.orientation {
+            case .landscapeLeft, .landscapeRight:
+//                log("Landscape")
+                mainIconTopIconConstraint.constant = topPadding - 50 + _extraTopPadding
+                if screenWidth < 428 { // Smaller than iPhone 13 Pro Max
+                    containerStackViewWidthConstraint.constant = -(screenWidth / 2)
+                }
+            case .portrait, .portraitUpsideDown:
+//                log("Portrait")
+                mainIconTopIconConstraint.constant = topPadding - 15 + _extraTopPadding
+                if screenWidth < 428 { // Smaller than iPhone 13 Pro Max
+                    containerStackViewWidthConstraint.constant = -(screenWidth / 6.25)
+                }
+            case .faceUp, .faceDown:
+//                log("Flat")
+                fallthrough
+            case .unknown: fallthrough
+            default: doNothing()
+            }
+        }
+    }
+    
+    private func doNothing() {}
+    
     // MARK: - Experimental
     
     @objc private func preferredContentSizeChanged(_ notification: Notification) {
@@ -421,8 +464,8 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
     }
     
     func scrollViewDidScroll(_ _scrollView: UIScrollView) {
-        if scrollView.contentSize.height - scrollView.frame.size.height > 0 {
-            if (scrollView.contentOffset.y > (scrollView.contentSize.height - scrollView.frame.size.height)) { // Reached bottom
+        if scrollView.contentSize.height > scrollView.frame.size.height {
+            if (scrollView.contentOffset.y.rounded(.down) >= (scrollView.contentSize.height - scrollView.frame.size.height + view.safeAreaInsets.bottom).rounded(.down)) { // Reached bottom
                 if primaryButtonVisualEffectView.effect != .none {
                     primaryButtonVisualEffectView.effect = .none
                 }
@@ -515,7 +558,5 @@ class UITextField2: UITextField {
     override func editingRect(forBounds bounds: CGRect) -> CGRect {
         return bounds.inset(by: padding)
     }
-    
-    
 }
 

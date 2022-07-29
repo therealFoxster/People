@@ -31,12 +31,18 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         }
         
         // Add person button
-        people.insert(Person(name: "Add", image: "SystemImage:plus"), at: 0)
+        people.append(Person(name: "Add", image: "SystemImage:plus"))
         
-        for i in 1...7 { // Looping from 7 to 1 to add 7 placeholder people
-            people.append(Person(name: "Placeholder \(i)", image: "PlaceholderProfilePhoto\(i)"))
+        // Adding placeholder peole; causes a spike in memory usage with large photos (could be a leak)
+        DispatchQueue.global(qos: .default).async {
+            for i in 1...7 {
+                self.people.append(Person(name: "Person \(i)", image: "PlaceholderProfilePhoto\(i)"))
+            }
+            DispatchQueue.main.async {
+                self.collectionView.reloadData()
+            }
         }
-
+        
         showLaunchScreen()
     }
     
@@ -76,6 +82,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             // Placeholder person cell
             else if image.hasPrefix("PlaceholderProfilePhoto") {
                 cell.imageView.image = UIImage(named: image)
+                cell.imageView.contentMode = .scaleAspectFill
             }
             
             // Normal cell (user-added)
@@ -239,7 +246,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     // MARK: - Show screens functions -
     
     func showLaunchScreen() {
-        let launchScreen = AppleEsqueViewController(title: "Welcome to\n\(appName)")
+        let launchScreen = AppleEsqueViewController(title: "Getting Started in \(appName)")
         
         launchScreen.addInfoView(title: "Names to Faces",
                                  subtitle: "Save names and photos of people you've met so you'll never forget a person ever again! (Hopefully.)",
@@ -247,7 +254,6 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
         launchScreen.addInfoView(title: "Work in Progress",
                                  subtitle: "This project is incomplete. As a result, a number of well expected features (e.g. retaining newly added people after app restart) are unavailable at this time.",
                                  icon: UIImage(systemName: "star.leadinghalf.filled"))
-        
         
         launchScreen.disableSwipeDownToDismiss()
         
@@ -405,17 +411,17 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     }
     
     @objc func showSpecialThanksScreen() {
-        guard let url = URL(string: "https://www.flaticon.com/free-icons/user") else { return }
+        guard let url = URL(string: "https://unsplash.com/s/photos/portrait") else { return }
         
         let specialThanksScreen = AppleEsqueViewController(title: "Special Thanks", primaryButtonTitle: "Done", addSecondaryButton: true)
         
         specialThanksScreen.addMainIcon(UIImage(systemName: "sparkles", withConfiguration: UIImage.SymbolConfiguration(pointSize: 56))!)
         
         specialThanksScreen.addInfoView(title: "Project Idea",
-                                 subtitle: "This app was created originally as part of the 100 Days of Swift course created by @TwoStraws. A few \"extensions\" (like these cool info screens) were later on added as an effort to further practice and explore how to make a user-friendly, Apple-esque iOS app.",
+                                 subtitle: "This app was created originally as part of the 100 Days of Swift course created by @TwoStraws. A few \"extensions\" (like these cool info screens) were also added as an effort to further practice and explore how to make a user-friendly, Apple-esque iOS app.",
                                  icon: UIImage(systemName: "lightbulb.circle"));
-        specialThanksScreen.addInfoView(title: "Placeholder Icons",
-                                 subtitle: "Icons for placeholder users were created by Freepik - Flaticon.",
+        specialThanksScreen.addInfoView(title: "Placeholder Photos",
+                                 subtitle: "Photos of placeholder users provided by Joseph Gonzalez, Albert Dera, Štefan Štefančík, Jurica Koletić, Robert Godwin, Mateus Campos Felipe, and Ali Morshedlou (in order of appearance) on Unsplash.",
                                  icon: UIImage(systemName: "person.crop.rectangle.stack"));
         
         specialThanksScreen.setSecondaryButtonTitle("Visit \"\(url.host()!)\"")
@@ -502,7 +508,5 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             print("Unable to find index path")
         }
     }
-
-    
 }
 

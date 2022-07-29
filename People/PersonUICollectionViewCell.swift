@@ -25,7 +25,6 @@ class PersonUICollectionViewCell: UICollectionViewCell {
             self.transform = self.isHighlighted ?
                 CGAffineTransform.identity.scaledBy(x: 0.97, y: 0.97) :
                 CGAffineTransform.identity
-            
         })
     }
     

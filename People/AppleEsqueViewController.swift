@@ -439,7 +439,7 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
                 if screenWidth < 428 { // Smaller than iPhone 13 Pro Max
                     containerStackViewWidthConstraint.constant = -(screenWidth / 2)
                 }
-            case .portrait, .portraitUpsideDown:
+            case .portrait:
 //                log("Portrait")
                 if mainIconCustomTopPadding != nil {
                     mainIconTopIconConstraint.constant = mainIconCustomTopPadding
@@ -449,6 +449,7 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
                 if screenWidth < 428 { // Smaller than iPhone 13 Pro Max
                     containerStackViewWidthConstraint.constant = -(screenWidth / 6.25)
                 }
+            case .portraitUpsideDown: fallthrough
             case .faceUp, .faceDown:
 //                log("Flat")
                 fallthrough

@@ -52,7 +52,10 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             addPlaceholderCells()
         }
         
-        showLaunchScreen()
+        DispatchQueue.main.async {
+            // Present in main async to prevent detached view controller warning
+            self.showLaunchScreen()
+        }
     }
     
     // MARK: - UICollectionView functions -

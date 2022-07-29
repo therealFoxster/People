@@ -268,12 +268,15 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
     
     // MARK: - Public functions -
     
+    private var mainIconCustomTopPadding: CGFloat!
     func addMainIcon(_ icon: UIImage, withCustomTopPadding _topPadding: CGFloat? = nil) {
         mainIcon.image = icon
 
         if _topPadding != nil {
-            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: topPadding - 15 + _extraTopPadding).isActive = false
-            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: _topPadding!).isActive = true
+            mainIconCustomTopPadding = _topPadding
+            mainIconTopIconConstraint.constant = _topPadding!
+//            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: topPadding - 15 + _extraTopPadding).isActive = false
+//            mainIcon.topAnchor.constraint(equalTo: scrollView.topAnchor, constant: _topPadding!).isActive = true
         }
     }
     
@@ -438,7 +441,11 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
                 }
             case .portrait, .portraitUpsideDown:
 //                log("Portrait")
-                mainIconTopIconConstraint.constant = topPadding - 15 + _extraTopPadding
+                if mainIconCustomTopPadding != nil {
+                    mainIconTopIconConstraint.constant = mainIconCustomTopPadding
+                } else {
+                    mainIconTopIconConstraint.constant = topPadding - 15 + _extraTopPadding
+                }
                 if screenWidth < 428 { // Smaller than iPhone 13 Pro Max
                     containerStackViewWidthConstraint.constant = -(screenWidth / 6.25)
                 }

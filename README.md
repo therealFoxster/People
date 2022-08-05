@@ -16,24 +16,24 @@ UIKit Practice Project #10 – Simple app to store names along with photos of pe
 
 ### Screenshots
 #### iPhone
-<img src="screenshots/iphone/1_launch.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/2_main.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/3_entername.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/4_addphoto.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/5_imagepicker.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/6_success.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/7_main2.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/8_options.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/9_rename.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/10_upcoming.png" alt="screenshot" width="300"/>
-<img src="screenshots/iphone/11_thanks.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/1_launch.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/2_main.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/3_entername.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/4_addphoto.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/5_imagepicker.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/6_success.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/7_main2.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/8_options.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/9_rename.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/10_upcoming.png" alt="screenshot" width="300"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/iphone/11_thanks.png" alt="screenshot" width="300"/>
 
-#### iPad (old app version)
-<img src="screenshots/ipad/1_launch.png" alt="screenshot" width="700"/>
-<img src="screenshots/ipad/2_entername_nokeyboard.png" alt="screenshot" width="700"/>
-<img src="screenshots/ipad/3_entername.png" alt="screenshot" width="700"/>
-<img src="screenshots/ipad/4_addphoto.png" alt="screenshot" width="700"/>
-<img src="screenshots/ipad/5_success.png" alt="screenshot" width="700"/>
-<img src="screenshots/ipad/6_options.png" alt="screenshot" width="700"/>
-<img src="screenshots/ipad/7_upcomingfeatures.png" alt="screenshot" width="700"/>
-<img src="screenshots/ipad/8_specialthanks.png" alt="screenshot" width="700"/>
+#### iPad (Old App Version)
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/ipad/1_launch.png" alt="screenshot" width="700"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/ipad/2_entername_nokeyboard.png" alt="screenshot" width="700"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/ipad/3_entername.png" alt="screenshot" width="700"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/ipad/4_addphoto.png" alt="screenshot" width="700"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/ipad/5_success.png" alt="screenshot" width="700"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/ipad/6_options.png" alt="screenshot" width="700"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/ipad/7_upcomingfeatures.png" alt="screenshot" width="700"/>
+<img src="https://raw.githubusercontent.com/foxster-mp4/__screenshots/master/People/ipad/8_specialthanks.png" alt="screenshot" width="700"/>

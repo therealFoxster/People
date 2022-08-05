@@ -524,7 +524,7 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             cellsOnVerticalScreen = 4
         }
         
-        let cellWidth = screenWidth / CGFloat(cellsOnVerticalScreen) - 10 * 2,
+        let cellWidth = screenWidth / CGFloat(cellsOnVerticalScreen) - 8 * 2,
             cellHeight = cellWidth + 40
         
         return CGSize(width: cellWidth, height: cellHeight)

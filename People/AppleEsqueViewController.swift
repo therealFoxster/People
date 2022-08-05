@@ -201,7 +201,7 @@ class AppleEsqueViewController: UIViewController, UIScrollViewDelegate {
             scrollView.addSubview(secondaryButton)
             NSLayoutConstraint.activate([
                 secondaryButton.centerXAnchor.constraint(equalTo: primaryButton.centerXAnchor),
-                secondaryButton.topAnchor.constraint(equalTo: primaryButton.bottomAnchor, constant: 12)
+                secondaryButton.topAnchor.constraint(equalTo: primaryButton.bottomAnchor, constant: 10)
             ])
         }
         

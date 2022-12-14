@@ -7,6 +7,7 @@
 
 import UIKit
 import Photos
+import LocalAuthentication
 
 class ViewController: UICollectionViewController, UINavigationControllerDelegate, UICollectionViewDelegateFlowLayout, UIImagePickerControllerDelegate {
 
@@ -15,6 +16,8 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
     let appName = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as! String
     private var photoLibraryAuthorizationStatus: PHAuthorizationStatus!
     
+    private var isLocked = true
+    private let lockedMessage = UIStackView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,33 +28,38 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
 //        (collectionViewLayout as! UICollectionViewFlowLayout).sectionInsetReference = .fromSafeArea
         
         let upcomingFeaturesButton = UIBarButtonItem(image: UIImage(systemName: "star.leadinghalf.filled"), style: .plain, target: self, action: #selector(showUpcomingFeaturesScreen))
-        navigationItem.rightBarButtonItem = upcomingFeaturesButton
+        navigationItem.leftBarButtonItem = upcomingFeaturesButton
+        
+        // Authentication
+        let lockButton = UIBarButtonItem(image: UIImage(systemName: "lock"), style: .plain, target: self, action: #selector(toggleLock))
+        navigationItem.rightBarButtonItem = lockButton
+        
+        let lockedTitleLabel = UILabel()
+        lockedTitleLabel.font = UIFont.systemFont(ofSize: 22, weight: .bold)
+        lockedTitleLabel.text = "Content Locked"
+        lockedTitleLabel.textAlignment = .center
+        lockedTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        let lockedSubtitleLabel = UILabel()
+        lockedSubtitleLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        lockedSubtitleLabel.text = "Tap the lock icon to unlock and view content."
+        lockedSubtitleLabel.textColor = .systemGray
+        lockedSubtitleLabel.textAlignment = .center
+        lockedSubtitleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        lockedMessage.axis = .vertical
+        lockedMessage.addArrangedSubview(lockedTitleLabel)
+        lockedMessage.addArrangedSubview(lockedSubtitleLabel)
+        lockedMessage.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(lockedMessage)
+        NSLayoutConstraint.activate([
+            lockedMessage.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            lockedMessage.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
         
         // Checks photo library authorization in the background using the utility queue
         DispatchQueue.global(qos: .utility).async {
             self.photoLibraryAuthorizationStatus = PHPhotoLibrary.authorizationStatus()
-        }
-        
-        let defaults = UserDefaults.standard
-        if let savedPeople = defaults.object(forKey: "people") as? Data { // Saved data exists
-            // Codable Person (using JSONDecoder)
-            let jsonDecoder = JSONDecoder()
-            do {
-                people = try jsonDecoder.decode([Person].self, from: savedPeople) // Attempting to create array of Person object from saved json data, then asign that array to people[]
-            } catch {
-                print("Unable to load people.")
-                addPlaceholderCells()
-            }
-            
-            // NSCoding Person (using NSKeyedUnarachiver)
-//            if let decodedPeople = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(savedPeople) as? [Person] {
-//                people = decodedPeople
-//            } else {
-//                print("Unable to load people.")
-//                addPlaceholderCells()
-//            }
-        } else { // First launch; create placeholders
-            addPlaceholderCells()
         }
         
         DispatchQueue.main.async {
@@ -287,6 +295,11 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
                                  icon: UIImage(systemName: "star.leadinghalf.filled"))
         
         launchScreen.disableSwipeDownToDismiss()
+        launchScreen.setPrimaryButtonAction(UIAction() { [weak self] _ in
+            launchScreen.dismiss(animated: true) {
+                self?.toggleLock()
+            }
+        })
         
         present(launchScreen, animated: true)
     }
@@ -556,5 +569,160 @@ class ViewController: UICollectionViewController, UINavigationControllerDelegate
             print("Unable to find index path")
         }
     }
+    
+    // MARK: Authentication (project 28 challenge)
+    
+    func lock() {
+        DispatchQueue.main.async {
+            self.navigationItem.rightBarButtonItem?.image = UIImage(systemName: "lock")
+            self.removePeople()
+            self.lockedMessage.isHidden = false
+        }
+        isLocked = true
+    }
+    
+    func unlock() {
+        DispatchQueue.main.async {
+            self.navigationItem.rightBarButtonItem?.image = UIImage(systemName: "lock.open")
+            self.loadPeople()
+            self.lockedMessage.isHidden = true
+        }
+        isLocked = false
+    }
+    
+    @objc func toggleLock() {
+        if !isLocked { // Content is unlocked.
+            // Lock content now.
+            lock()
+            return
+        }
+        
+        // Content is locked -> authenticate to unlock.
+        // Authentication.
+        let context = LAContext()
+        var errorObject: NSError?
+        
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &errorObject) {
+            // Touch ID/Face ID is available and enrolled.
+            let reason = "Authentication is required to unlock and view content." // Touch ID usage description (Face ID's is in Info.plist).
+            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { [weak self] success, error in
+                if success {
+                    // Authenticated.
+                    self?.unlock()
+                } else {
+                    // Error occured.
+                }
+            }
+        } else {
+            // Touch ID/Face ID is unavailable or unenrolled -> use password.
+            if let storedPassword = KeychainWrapper.standard.string(forKey: "password") {
+                // Password already set up -> prompt to input password -> unlock.
+                let passwordPrompt = UIAlertController(title: "View Content", message: "Enter the password you set.", preferredStyle: .alert)
+                passwordPrompt.addTextField()
+                passwordPrompt.textFields?[0].placeholder = "Password"
+                passwordPrompt.textFields?[0].isSecureTextEntry = true
+                
+                passwordPrompt.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                passwordPrompt.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+                    guard let enteredPassword = passwordPrompt.textFields?[0].text else { return }
+                    
+                    if enteredPassword.isEmpty {
+                        self?.tryAgain(reason: "Password is Empty")
+                        return
+                    }
+                    
+                    if enteredPassword != storedPassword {
+                        self?.tryAgain(reason: "Incorrect Password")
+                    } else {
+                        self?.unlock()
+                    }
+                })
+                present(passwordPrompt, animated: true)
+            }
+            
+            // Password not set up -> prompt to set up password -> unlock.
+            let passwordSetupAlert = UIAlertController(title: "Biometrics Authentication Unavailable", message: "Would you like to set up and use a password instead?", preferredStyle: .alert)
+            passwordSetupAlert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            passwordSetupAlert.addAction(UIAlertAction(title: "Continue", style: .default) { [weak self] _ in
+                // Set up password.
+                let passwordInput = UIAlertController(title: "Create a Password", message: "Enter a secure password.", preferredStyle: .alert)
+                passwordInput.addTextField()
+                passwordInput.textFields?[0].placeholder = "Password"
+                passwordInput.textFields?[0].isSecureTextEntry = true
+                
+                passwordInput.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                passwordInput.addAction(UIAlertAction(title: "Continue", style: .default) { _ in
+                    guard let enteredPassword = passwordInput.textFields?[0].text else { return }
+                    
+                    if enteredPassword.isEmpty {
+                        self?.tryAgain(reason: "Password is Empty")
+                        return
+                    }
+                    
+                    // Confirm password.
+                    let passwordConfirmationInput = UIAlertController(title: "Confirm Password", message: "Enter the password again to confirm.\nNote that you might not be able to unlock the content if you forget this password.", preferredStyle: .alert)
+                    passwordConfirmationInput.addTextField()
+                    passwordConfirmationInput.textFields?[0].placeholder = "Password"
+                    passwordConfirmationInput.textFields?[0].isSecureTextEntry = true
+                    
+                    passwordConfirmationInput.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+                    passwordConfirmationInput.addAction(UIAlertAction(title: "Set Password", style: .destructive) { _ in
+                        guard let confirmedPassword = passwordConfirmationInput.textFields?[0].text else { return }
+                        
+                        if enteredPassword == confirmedPassword {
+                            // Store password in keychain.
+                            KeychainWrapper.standard.set(confirmedPassword, forKey: "password")
+                            self?.unlock()
+                        } else {
+                            self?.tryAgain(reason: "Passwords Don't Match")
+                        }
+                    })
+                    self?.present(passwordConfirmationInput, animated: true)
+                })
+                self?.present(passwordInput, animated: true)
+            })
+            present(passwordSetupAlert, animated: true)
+        }
+    }
+    
+    func tryAgain(reason: String?) {
+        let alert = UIAlertController(title: reason, message: "Try again.", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
+    }
+    
+    func loadPeople() {
+        let defaults = UserDefaults.standard
+        if let savedPeople = defaults.object(forKey: "people") as? Data { // Saved data exists
+            // Codable Person (using JSONDecoder)
+            let jsonDecoder = JSONDecoder()
+            do {
+                people = try jsonDecoder.decode([Person].self, from: savedPeople) // Attempting to create array of Person object from saved json data, then asign that array to people[]
+                DispatchQueue.main.async {
+                    self.collectionView.reloadData()
+                }
+            } catch {
+                print("Unable to load people.")
+                addPlaceholderCells()
+            }
+            
+            // NSCoding Person (using NSKeyedUnarachiver)
+//            if let decodedPeople = try? NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(savedPeople) as? [Person] {
+//                people = decodedPeople
+//            } else {
+//                print("Unable to load people.")
+//                addPlaceholderCells()
+//            }
+        } else { // First launch; create placeholders
+            addPlaceholderCells()
+        }
+    }
+    
+    func removePeople() {
+        save()
+        people = []
+        collectionView.reloadData()
+    }
+    
 }
 

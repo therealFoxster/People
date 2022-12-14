@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		CB8B7E38D7465A3D2FAE5BAE /* Pods_People.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D62448212D88A6BFEC22D91F /* Pods_People.framework */; };
+		EC17BC6F294A5D0F00AB67FF /* KeychainWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC17BC6D294A5D0F00AB67FF /* KeychainWrapper.swift */; };
+		EC17BC70294A5D0F00AB67FF /* KeychainItemAccessibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC17BC6E294A5D0F00AB67FF /* KeychainItemAccessibility.swift */; };
 		EC9660792883FEF5000BD96D /* AppleEsqueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC9660782883FEF5000BD96D /* AppleEsqueViewController.swift */; };
 		ECBFC69F28816710003D0B3D /* PersonUICollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECBFC69E28816710003D0B3D /* PersonUICollectionViewCell.swift */; };
 		ECCF703B2881A6110022CBB4 /* Person.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECCF703A2881A6110022CBB4 /* Person.swift */; };
@@ -23,6 +25,8 @@
 		1C974EE1D8F7DDEB318943CB /* Pods-People.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-People.debug.xcconfig"; path = "Target Support Files/Pods-People/Pods-People.debug.xcconfig"; sourceTree = "<group>"; };
 		4EA8E22B65B3C23DB70C1165 /* Pods-People.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-People.release.xcconfig"; path = "Target Support Files/Pods-People/Pods-People.release.xcconfig"; sourceTree = "<group>"; };
 		D62448212D88A6BFEC22D91F /* Pods_People.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_People.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC17BC6D294A5D0F00AB67FF /* KeychainWrapper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainWrapper.swift; sourceTree = "<group>"; };
+		EC17BC6E294A5D0F00AB67FF /* KeychainItemAccessibility.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainItemAccessibility.swift; sourceTree = "<group>"; };
 		EC9660782883FEF5000BD96D /* AppleEsqueViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEsqueViewController.swift; sourceTree = "<group>"; };
 		ECBFC69E28816710003D0B3D /* PersonUICollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonUICollectionViewCell.swift; sourceTree = "<group>"; };
 		ECCF703A2881A6110022CBB4 /* Person.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Person.swift; sourceTree = "<group>"; };
@@ -65,6 +69,15 @@
 			path = Pods;
 			sourceTree = "<group>";
 		};
+		EC17BC6C294A5D0F00AB67FF /* KeychainWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				EC17BC6D294A5D0F00AB67FF /* KeychainWrapper.swift */,
+				EC17BC6E294A5D0F00AB67FF /* KeychainItemAccessibility.swift */,
+			);
+			path = KeychainWrapper;
+			sourceTree = "<group>";
+		};
 		ECEB120E28815A9900063FDB = {
 			isa = PBXGroup;
 			children = (
@@ -96,6 +109,7 @@
 				ECEB122328815A9E00063FDB /* Assets.xcassets */,
 				ECEB122528815A9E00063FDB /* LaunchScreen.storyboard */,
 				ECEB122828815A9E00063FDB /* Info.plist */,
+				EC17BC6C294A5D0F00AB67FF /* KeychainWrapper */,
 			);
 			path = People;
 			sourceTree = "<group>";
@@ -218,7 +232,9 @@
 				ECCF703B2881A6110022CBB4 /* Person.swift in Sources */,
 				ECEB121F28815A9900063FDB /* ViewController.swift in Sources */,
 				EC9660792883FEF5000BD96D /* AppleEsqueViewController.swift in Sources */,
+				EC17BC6F294A5D0F00AB67FF /* KeychainWrapper.swift in Sources */,
 				ECEB121B28815A9900063FDB /* AppDelegate.swift in Sources */,
+				EC17BC70294A5D0F00AB67FF /* KeychainItemAccessibility.swift in Sources */,
 				ECBFC69F28816710003D0B3D /* PersonUICollectionViewCell.swift in Sources */,
 				ECEB121D28815A9900063FDB /* SceneDelegate.swift in Sources */,
 			);
